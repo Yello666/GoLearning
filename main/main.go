@@ -84,16 +84,8 @@ func ValidateToken(tokenString string) (*Claims, error) {
 		    Valid     bool                   // 验证结果标志
 		}
 	*/
-	if !token.Valid { //表示
+	if !token.Valid {
 		return nil, fmt.Errorf("invalid token")
-	}
-	claims, ok := token.Claims.(*Claims)
-	if ok && token.Valid {
-		username := claims.Username
-		if username != "Yegg" {
-			return nil, fmt.Errorf("Access denied")
-		}
-
 	}
 
 	return claims, nil
@@ -128,8 +120,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("user", claims) // 将用户信息存入上下文
-		c.Next()              // 继续处理请求
+		c.Set("claims", claims) // 将用户信息存入上下文
+		c.Next()                // 继续处理请求
 	}
 }
 
@@ -176,17 +168,20 @@ func loginHandler(c *gin.Context) {
 
 // 受保护的接口
 func protectedHandler(c *gin.Context) {
-	user, exists := c.Get("user")
+	user, exists := c.Get("claims")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found in context"})
 		return
 	}
 
-	claims, ok := user.(*Claims)
+	claims, ok := user.(*Claims) //获取解析出来的username，userid
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user claims"})
 		return
 	}
-
+	if claims.Username != "Yegg" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "you are silly egg!"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Hello, %s!", claims.Username)})
 }
