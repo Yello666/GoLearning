@@ -1,0 +1,18 @@
+syntax = "proto3";//使用语法：
+
+package RPC; //这个文件在项目中所属的包
+
+option go_package = ".;RPC"; //使用grpc生成的代码放在哪,应提前创建好，不会自动创建
+//.代表在当前目录生成 ;是间隔 RPC是生成代码的包名 就是在./RPC下放生成的server代码
+
+service MyService {
+  rpc SayHello (HelloRequest) returns (HelloResponse) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string rsp_message = 1;
+}
