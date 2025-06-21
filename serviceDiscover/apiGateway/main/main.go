@@ -33,7 +33,7 @@ func main() {
 	userServiceProxy := createServiceProxy(consulClient, "user-service")
 	orderServiceProxy := createServiceProxy(consulClient, "order-service")
 
-	// 路由配置 //???
+	// 路由配置
 	r.POST("users/register", func(c *gin.Context) {
 		userServiceProxy.ServeHTTP(c.Writer, c.Request)
 	})
@@ -41,14 +41,14 @@ func main() {
 	r.GET("orders/:userID", func(c *gin.Context) {
 		orderServiceProxy.ServeHTTP(c.Writer, c.Request)
 	})
-	// 在API网关中添加错误处理路由，可以返回一个错误页面的html
-	r.GET("/service-unavailable", func(c *gin.Context) {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"code":    503,
-			"message": "Service temporarily unavailable",
-			"details": c.Request.Header.Get("X-Error"), // 可选：显示内部错误详情
-		})
-	})
+	//// 在API网关中添加错误处理路由，可以返回一个错误页面的html
+	//r.GET("/service-unavailable", func(c *gin.Context) {
+	//	c.JSON(http.StatusServiceUnavailable, gin.H{
+	//		"code":    503,
+	//		"message": "Service temporarily unavailable",
+	//		"details": c.Request.Header.Get("X-Error"), // 可选：显示内部错误详情
+	//	})
+	//})
 
 	// 启动服务
 	go func() {
